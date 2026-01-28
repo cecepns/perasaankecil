@@ -5,16 +5,13 @@ import { questions } from '../data/questions'
  * Logika baru: hitung berapa kali user menjawab Setuju (3) atau Sangat Setuju (4) per karakter
  */
 export const calculateCharacterFrequencies = (answers) => {
-  // Inisialisasi counter untuk 9 karakter
+  // Inisialisasi counter untuk 6 karakter (yang punya gambar)
   const frequencies = {
     sadness: 0,
     anger: 0,
     fear: 0,
     disgust: 0,
-    embarrassment: 0,
-    guilt: 0,
     joy: 0,
-    relief: 0,
     surprise: 0,
   }
 
@@ -171,57 +168,6 @@ export const getCharacterInfo = (character) => {
       color: 'bg-orange-400',
       textColor: 'text-orange-800',
       borderColor: 'border-orange-400',
-    },
-    relief: {
-      name: 'Reda',
-      subtitle: 'Ketenangan / Lega',
-      originalName: 'Relief',
-      description: 'Kamu dapat menenangkan diri setelah menghadapi tekanan atau situasi sulit. Ini menunjukkan kemampuan mengelola emosi dan tetap fokus.',
-      fullDescription: 'Kemampuanmu menjaga keseimbangan emosional membantu mempercepat pemulihan setelah stres. Kamu dapat mengambil keputusan yang lebih tenang dan bijaksana.',
-      potensi: [
-        'Membantu menjaga keseimbangan emosional',
-        'Mempercepat pemulihan setelah stres',
-        'Mendukung pengambilan keputusan yang lebih tenang'
-      ],
-      tips: 'Tetap tenang dalam situasi sulit, luangkan waktu untuk refleksi diri, dan atur emosimu dengan baik agar tetap fokus.',
-      tags: ['#TetapTenang', '#RefleksiDiri', '#AturEmosi'],
-      color: 'bg-teal-400',
-      textColor: 'text-teal-800',
-      borderColor: 'border-teal-400',
-    },
-    embarrassment: {
-      name: 'Malu',
-      subtitle: 'Rasa Malu / Kesadaran Sosial',
-      originalName: 'Embarrassment',
-      description: 'Kamu peka terhadap norma sosial dan bagaimana tindakanmu memengaruhi orang lain, membuatmu reflektif dalam interaksi sosial.',
-      fullDescription: 'Kepekaan terhadap norma sosial membantu menyesuaikan diri dengan lingkungan sosial. Kamu memperkuat komunikasi yang sopan dan efektif, serta mengurangi kesalahpahaman dalam interaksi.',
-      potensi: [
-        'Membantu menyesuaikan diri dengan lingkungan sosial',
-        'Memperkuat komunikasi yang sopan dan efektif',
-        'Mengurangi kesalahpahaman dalam interaksi'
-      ],
-      tips: 'Refleksikan tindakan sosialmu, tetap peka terhadap norma sosial, dan perhatikan dampak tindakanmu terhadap orang lain.',
-      tags: ['#RefleksiSosial', '#PekaNormaSosial', '#PerhatikanDampakTindakan'],
-      color: 'bg-pink-400',
-      textColor: 'text-pink-800',
-      borderColor: 'border-pink-400',
-    },
-    guilt: {
-      name: 'Sesal',
-      subtitle: 'Rasa Bersalah / Kesadaran Diri',
-      originalName: 'Guilt',
-      description: 'Kamu mampu menilai tindakan sendiri dan merenungkan dampaknya, membantu introspeksi untuk perbaikan diri.',
-      fullDescription: 'Kesadaran diri yang kuat memperkuat kemampuanmu untuk belajar dari kesalahan tanpa menghakimi diri. Ini memotivasi tindakan yang lebih bijaksana di masa depan.',
-      potensi: [
-        'Memperkuat kesadaran diri',
-        'Membantu belajar dari kesalahan tanpa menghakimi diri',
-        'Memotivasi tindakan yang lebih bijaksana'
-      ],
-      tips: 'Lakukan introspeksi diri secara berkala, belajar dari kesalahan tanpa terlalu keras pada diri sendiri, dan refleksikan tindakanmu dengan cara yang positif.',
-      tags: ['#IntrospeksiDiri', '#BelajarDariKesalahan', '#RefleksiPositif'],
-      color: 'bg-indigo-400',
-      textColor: 'text-indigo-800',
-      borderColor: 'border-indigo-400',
     },
   }
 

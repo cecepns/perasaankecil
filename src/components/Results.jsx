@@ -36,8 +36,16 @@ const Results = ({ answers, onReset }) => {
     : 0
 
   return (
-    <div className="min-h-screen py-8 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen py-8 px-4 relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-200 rounded-full opacity-20 blur-2xl animate-float"></div>
+        <div className="absolute top-40 right-20 w-40 h-40 bg-blue-200 rounded-full opacity-20 blur-2xl animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-1/4 w-36 h-36 bg-pink-200 rounded-full opacity-20 blur-2xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-40 right-1/3 w-44 h-44 bg-purple-200 rounded-full opacity-20 blur-2xl animate-float" style={{ animationDelay: '1.5s' }}></div>
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">

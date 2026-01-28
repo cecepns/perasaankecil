@@ -1,10 +1,16 @@
 import { useState } from 'react'
+import Welcome from './components/Welcome'
 import Survey from './components/Survey'
 import Results from './components/Results'
 
 function App() {
+  const [showWelcome, setShowWelcome] = useState(true)
   const [answers, setAnswers] = useState(null)
   const [showResults, setShowResults] = useState(false)
+
+  const handleStart = () => {
+    setShowWelcome(false)
+  }
 
   const handleSurveyComplete = (surveyAnswers) => {
     setAnswers(surveyAnswers)
@@ -14,11 +20,14 @@ function App() {
   const handleReset = () => {
     setAnswers(null)
     setShowResults(false)
+    setShowWelcome(true)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pastel-pink via-white to-pastel-blue">
-      {!showResults ? (
+    <div className="min-h-screen pastel-background">
+      {showWelcome ? (
+        <Welcome onStart={handleStart} />
+      ) : !showResults ? (
         <Survey onComplete={handleSurveyComplete} />
       ) : (
         <Results answers={answers} onReset={handleReset} />

@@ -15,7 +15,7 @@ const CharacterIllustration = ({ character, size = 'default' }) => {
   }
   const config = sizeConfig[size] || sizeConfig.default
 
-  // Map characters to their images
+  // Map characters to their images (hanya 6 karakter yang ada gambarnya)
   const characterImages = {
     joy: ZiziImg,          // Zizi (bahagia)
     sadness: LumiImg,      // Lumi (sedih)
@@ -23,28 +23,24 @@ const CharacterIllustration = ({ character, size = 'default' }) => {
     fear: LalaImg,         // Lala (takut)
     disgust: PupuImg,      // Pupu (jijik)
     surprise: NayoImg,     // Nayo (Terkejut)
-    // For missing characters, we'll use placeholders
-    relief: null,          // TODO: Need image for Relief
-    embarrassment: null,   // TODO: Need image for Embarrassment
-    guilt: null,           // TODO: Need image for Guilt
   }
 
   const characterImage = characterImages[character]
 
-  // If image exists, use it
+  // Tampilkan gambar karakter
   if (characterImage) {
     return (
       <div className="flex items-center justify-center">
         <img
           src={characterImage}
           alt={character}
-          className={`${config.imgClass} object-contain`}
+          className={`${config.imgClass} object-contain drop-shadow-md rounded-lg`}
         />
       </div>
     )
   }
 
-  // Fallback SVG for characters without images (Relief, Embarrassment, Guilt)
+  // Fallback jika karakter tidak ditemukan
   const getCharacterSVG = () => {
     const sizeClass = `${config.width} ${config.height}`
     
@@ -203,76 +199,6 @@ const CharacterIllustration = ({ character, size = 'default' }) => {
             {/* Hands up in surprise */}
             <ellipse cx="65" cy="125" rx="8" ry="20" fill="#FB923C" transform="rotate(-30 65 125)" />
             <ellipse cx="135" cy="125" rx="8" ry="20" fill="#FB923C" transform="rotate(30 135 125)" />
-          </svg>
-        )
-      case 'relief':
-        return (
-          <svg width="200" height="200" viewBox="0 0 200 200" className={sizeClass}>
-            {/* Relief (Tenang) - Teal/Cyan, calm, closed eyes, peaceful */}
-            <ellipse cx="100" cy="115" rx="70" ry="75" fill="#2DD4BF" />
-            {/* Wavy calm hair */}
-            <path d="M 45 60 Q 60 50 75 60 Q 90 70 105 60 Q 120 50 135 60 Q 150 70 155 80 L 150 85 Q 130 75 110 85 Q 90 75 70 85 Q 50 75 45 85 Z" fill="#14B8A6" />
-            {/* Peaceful outfit */}
-            <ellipse cx="100" cy="155" rx="55" ry="35" fill="#14B8A6" />
-            {/* Closed peaceful eyes */}
-            <path d="M 75 100 Q 85 105 95 100" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round" />
-            <path d="M 105 100 Q 115 105 125 100" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round" />
-            {/* Gentle smile */}
-            <path
-              d="M 85 125 Q 100 135 115 125"
-              fill="none"
-              stroke="#000"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            {/* Hands in meditation pose */}
-            <ellipse cx="75" cy="140" rx="10" ry="15" fill="#2DD4BF" />
-            <ellipse cx="125" cy="140" rx="10" ry="15" fill="#2DD4BF" />
-          </svg>
-        )
-      case 'embarrassment':
-        return (
-          <svg width="200" height="200" viewBox="0 0 200 200" className={sizeClass}>
-            {/* Embarrassment (Sungkan) - Pink, large and round, hiding in hoodie */}
-            <circle cx="100" cy="120" r="80" fill="#FFB6C1" />
-            {/* Hoodie covering face */}
-            <path d="M 40 80 Q 50 50 70 60 Q 90 70 110 60 Q 130 50 160 80 Q 150 100 130 90 Q 110 100 90 90 Q 70 100 50 90 Q 40 80 40 80" fill="#E8E8E8" />
-            <rect x="50" y="90" width="100" height="80" rx="15" fill="#E8E8E8" />
-            {/* Zipper */}
-            <line x1="100" y1="90" x2="100" y2="170" stroke="#888" strokeWidth="3" />
-            <circle cx="100" cy="95" r="4" fill="#888" />
-            {/* Small eyes peeking */}
-            <circle cx="85" cy="110" r="4" fill="#FF69B4" />
-            <circle cx="115" cy="110" r="4" fill="#FF69B4" />
-            {/* Hands covering face */}
-            <ellipse cx="70" cy="105" rx="12" ry="20" fill="#FFB6C1" />
-            <ellipse cx="130" cy="105" rx="12" ry="20" fill="#FFB6C1" />
-          </svg>
-        )
-      case 'guilt':
-        return (
-          <svg width="200" height="200" viewBox="0 0 200 200" className={sizeClass}>
-            {/* Guilt (Insaf) - Indigo, thoughtful, hand on chin */}
-            <ellipse cx="100" cy="120" rx="65" ry="70" fill="#818CF8" />
-            {/* Neat hair */}
-            <path d="M 50 60 Q 60 45 75 55 Q 90 65 105 55 Q 120 45 135 55 Q 145 65 150 75 Q 140 80 125 75 Q 110 80 95 75 Q 80 80 65 75 Q 50 70 50 60 Z" fill="#6366F1" />
-            {/* Formal outfit */}
-            <ellipse cx="100" cy="155" rx="50" ry="35" fill="#6366F1" />
-            {/* Thoughtful eyes looking down */}
-            <ellipse cx="85" cy="105" rx="6" ry="7" fill="#000" />
-            <ellipse cx="115" cy="105" rx="6" ry="7" fill="#000" />
-            {/* Pensive mouth */}
-            <path
-              d="M 90 125 Q 100 120 110 125"
-              fill="none"
-              stroke="#000"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            {/* Hand on chin (thinking) */}
-            <ellipse cx="120" cy="125" rx="12" ry="18" fill="#818CF8" />
-            {/* Other hand by side */}
-            <ellipse cx="75" cy="145" rx="10" ry="15" fill="#818CF8" />
           </svg>
         )
       default:

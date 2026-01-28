@@ -58,22 +58,22 @@ export const questions = [
   {
     id: 12,
     text: "Jika melihat seseorang direndahkan, aku memilih diam agar tidak ikut masalah.",
-    character: "embarrassment",
+    character: "disgust",
   },
   {
     id: 13,
     text: "Aku merasa sulit menjadi diri sendiri di lingkungan baru.",
-    character: "embarrassment",
+    character: "disgust",
   },
   {
     id: 14,
     text: "Aku merasa bukan tanggung jawabku jika orang lain diperlakukan tidak adil.",
-    character: "guilt",
+    character: "surprise",
   },
   {
     id: 15,
     text: "Aku menyesal jika pernah melakukan hal yang menyakiti orang lain, meskipun tidak ada yang tahu.",
-    character: "guilt",
+    character: "surprise",
   },
   {
     id: 16,
@@ -88,12 +88,12 @@ export const questions = [
   {
     id: 18,
     text: "Aku bisa tetap tenang setelah menghadapi situasi yang menegangkan atau sulit.",
-    character: "relief",
+    character: "joy",
   },
   {
     id: 19,
     text: "Aku merasa lega ketika masalah sudah terselesaikan, dan bisa fokus lagi.",
-    character: "relief",
+    character: "joy",
   },
   {
     id: 20,
