@@ -49,6 +49,34 @@ export const calculateCharacterNegativeFrequencies = (answers) => {
 }
 
 /**
+ * Menghitung breakdown jawaban per emosi: jumlah per opsi (1=Sangat Tidak Setuju, 2=Tidak Setuju, 3=Setuju, 4=Sangat Setuju)
+ * Untuk grafik visualisasi yang menampilkan semua jawaban per emosi.
+ */
+export const calculateCharacterAnswerBreakdown = (answers) => {
+  const breakdown = {
+    sadness: { sangatTidakSetuju: 0, tidakSetuju: 0, setuju: 0, sangatSetuju: 0 },
+    anger: { sangatTidakSetuju: 0, tidakSetuju: 0, setuju: 0, sangatSetuju: 0 },
+    fear: { sangatTidakSetuju: 0, tidakSetuju: 0, setuju: 0, sangatSetuju: 0 },
+    disgust: { sangatTidakSetuju: 0, tidakSetuju: 0, setuju: 0, sangatSetuju: 0 },
+    joy: { sangatTidakSetuju: 0, tidakSetuju: 0, setuju: 0, sangatSetuju: 0 },
+    surprise: { sangatTidakSetuju: 0, tidakSetuju: 0, setuju: 0, sangatSetuju: 0 },
+  }
+  const keyByValue = {
+    1: 'sangatTidakSetuju',
+    2: 'tidakSetuju',
+    3: 'setuju',
+    4: 'sangatSetuju',
+  }
+  questions.forEach((question) => {
+    const answer = answers[question.id]
+    if (answer >= 1 && answer <= 4 && breakdown[question.character]) {
+      breakdown[question.character][keyByValue[answer]]++
+    }
+  })
+  return breakdown
+}
+
+/**
  * Menentukan karakter dominan (frekuensi tertinggi) dan 3 karakter pendukung
  */
 export const determineCharacters = (frequencies) => {

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
-import { calculateCharacterFrequencies, calculateCharacterNegativeFrequencies, determineCharacters, getCharacterInfo } from '../utils/scoring'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { calculateCharacterFrequencies, calculateCharacterAnswerBreakdown, determineCharacters, getCharacterInfo } from '../utils/scoring'
 import CharacterIllustration from './CharacterIllustration'
 
 // Nama emosi dalam bahasa Indonesia untuk grafik
@@ -16,7 +16,7 @@ const EMOTION_LABELS = {
 const Results = ({ answers, onReset }) => {
   // Hitung frekuensi jawaban positif per karakter
   const frequencies = useMemo(() => calculateCharacterFrequencies(answers), [answers])
-  const negativeFrequencies = useMemo(() => calculateCharacterNegativeFrequencies(answers), [answers])
+  const answerBreakdown = useMemo(() => calculateCharacterAnswerBreakdown(answers), [answers])
 
   // Tentukan karakter dominan dan 3 pendukung
   const characters = useMemo(() => determineCharacters(frequencies), [frequencies])
@@ -30,25 +30,20 @@ const Results = ({ answers, onReset }) => {
     [characters.supporting]
   )
 
-  // Data untuk bar chart - pakai nama emosi (Bahagia, Sedih, dll)
-  const chartData = characters.all.map(char => {
-    const info = getCharacterInfo(char.character)
+  // Data untuk bar chart stacked: semua jawaban per emosi (Sangat TS, Tidak S, Setuju, Sangat S)
+  const emotionOrder = ['joy', 'sadness', 'anger', 'fear', 'disgust', 'surprise']
+  const chartData = emotionOrder.map(character => {
+    const info = getCharacterInfo(character)
+    const b = answerBreakdown[character] || {}
     return {
-      name: EMOTION_LABELS[char.character] || char.character,
-      frequency: char.frequency,
+      name: EMOTION_LABELS[character] || character,
+      sangatTidakSetuju: b.sangatTidakSetuju ?? 0,
+      tidakSetuju: b.tidakSetuju ?? 0,
+      setuju: b.setuju ?? 0,
+      sangatSetuju: b.sangatSetuju ?? 0,
       color: info.color.replace('bg-', ''),
     }
   })
-
-  // Data tabel: jawaban benar (positif) vs salah (negatif) per emosi
-  const tableData = useMemo(() => {
-    const emotionOrder = ['joy', 'sadness', 'anger', 'fear', 'disgust', 'surprise']
-    return emotionOrder.map(character => ({
-      emosi: EMOTION_LABELS[character],
-      benar: frequencies[character] ?? 0,
-      salah: negativeFrequencies[character] ?? 0,
-    }))
-  }, [frequencies, negativeFrequencies])
 
   // Hitung persentase untuk karakter dominan
   const totalAnswers = Object.values(frequencies).reduce((a, b) => a + b, 0)
@@ -189,41 +184,13 @@ const Results = ({ answers, onReset }) => {
           </div>
         </div>
 
-        {/* Tabel Jawaban Benar/Salah per Emosi */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 overflow-x-auto">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
-            Tabel Jawaban per Emosi
-          </h3>
-          <p className="text-sm text-gray-600 text-center mb-4">
-            Jawaban benar (Setuju/Sangat Setuju) dan salah (Tidak Setuju/Sangat Tidak Setuju) tetap terdeteksi per emosi
-          </p>
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b-2 border-gray-200">
-                <th className="text-left py-3 px-4 font-semibold text-gray-800">Emosi</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-800">Benar</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-800">Salah</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map((row, idx) => (
-                <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 font-medium text-gray-700">{row.emosi}</td>
-                  <td className="py-3 px-4 text-center text-green-600">{row.benar}</td>
-                  <td className="py-3 px-4 text-center text-red-600">{row.salah}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Bar Chart - Dominasi Emosi */}
+        {/* Bar Chart - Visualisasi Dominasi Emosi (semua jawaban: Sangat TS, Tidak S, Setuju, Sangat S) */}
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
           <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
             Visualisasi Dominasi Emosi
           </h3>
           <p className="text-sm text-gray-600 text-center mb-4">
-            Grafik ini menunjukkan dominasi emosi yang ada pada dirimu
+            Semua jawaban per emosi: Sangat Tidak Setuju, Tidak Setuju, Setuju, dan Sangat Setuju
           </p>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -237,39 +204,34 @@ const Results = ({ answers, onReset }) => {
                   tick={{ fontSize: 12 }}
                 />
                 <YAxis 
-                  label={{ value: 'Frekuensi', angle: -90, position: 'insideLeft' }}
+                  label={{ value: 'Jumlah jawaban', angle: -90, position: 'insideLeft' }}
                 />
                 <Tooltip 
                   content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
+                    if (active && payload && payload.length && payload[0].payload) {
+                      const p = payload[0].payload
+                      const total = (p.sangatTidakSetuju ?? 0) + (p.tidakSetuju ?? 0) + (p.setuju ?? 0) + (p.sangatSetuju ?? 0)
                       return (
-                        <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
-                          <p className="font-semibold">{payload[0].payload.name}</p>
-                          <p className="text-sm text-gray-600">
-                            Dominasi: {payload[0].value} jawaban positif
-                          </p>
+                        <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200 min-w-[180px]">
+                          <p className="font-semibold border-b border-gray-200 pb-1 mb-2">{p.name}</p>
+                          <p className="text-xs text-red-600">Sangat Tidak Setuju: {p.sangatTidakSetuju ?? 0}</p>
+                          <p className="text-xs text-orange-500">Tidak Setuju: {p.tidakSetuju ?? 0}</p>
+                          <p className="text-xs text-emerald-600">Setuju: {p.setuju ?? 0}</p>
+                          <p className="text-xs text-green-600">Sangat Setuju: {p.sangatSetuju ?? 0}</p>
+                          {total > 0 && (
+                            <p className="text-xs text-gray-500 mt-1 pt-1 border-t border-gray-100">Total: {total} jawaban</p>
+                          )}
                         </div>
                       )
                     }
                     return null
                   }}
                 />
-                <Bar dataKey="frequency" radius={[8, 8, 0, 0]}>
-                  {chartData.map((entry, index) => {
-                    const colorMap = {
-                      'yellow-400': '#fbbf24',
-                      'blue-400': '#60a5fa',
-                      'red-400': '#f87171',
-                      'purple-400': '#c084fc',
-                      'green-400': '#4ade80',
-                      'orange-400': '#fb923c',
-                      'teal-400': '#2dd4bf',
-                      'pink-400': '#f472b6',
-                      'indigo-400': '#818cf8',
-                    }
-                    return <Cell key={`cell-${index}`} fill={colorMap[entry.color] || '#3b82f6'} />
-                  })}
-                </Bar>
+                <Legend />
+                <Bar dataKey="sangatTidakSetuju" name="Sangat Tidak Setuju" stackId="a" fill="#dc2626" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="tidakSetuju" name="Tidak Setuju" stackId="a" fill="#f97316" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="setuju" name="Setuju" stackId="a" fill="#10b981" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="sangatSetuju" name="Sangat Setuju" stackId="a" fill="#059669" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
