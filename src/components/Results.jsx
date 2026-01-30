@@ -1,33 +1,54 @@
 import { useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
-import { calculateCharacterFrequencies, determineCharacters, getCharacterInfo } from '../utils/scoring'
+import { calculateCharacterFrequencies, calculateCharacterNegativeFrequencies, determineCharacters, getCharacterInfo } from '../utils/scoring'
 import CharacterIllustration from './CharacterIllustration'
+
+// Nama emosi dalam bahasa Indonesia untuk grafik
+const EMOTION_LABELS = {
+  joy: 'Bahagia',
+  sadness: 'Sedih',
+  anger: 'Marah',
+  fear: 'Takut',
+  disgust: 'Jijik',
+  surprise: 'Terkejut',
+}
 
 const Results = ({ answers, onReset }) => {
   // Hitung frekuensi jawaban positif per karakter
   const frequencies = useMemo(() => calculateCharacterFrequencies(answers), [answers])
-  
+  const negativeFrequencies = useMemo(() => calculateCharacterNegativeFrequencies(answers), [answers])
+
   // Tentukan karakter dominan dan 3 pendukung
   const characters = useMemo(() => determineCharacters(frequencies), [frequencies])
-  
+
   // Get info untuk karakter dominan
   const dominantInfo = useMemo(() => getCharacterInfo(characters.dominant.character), [characters.dominant])
-  
+
   // Get info untuk 3 karakter pendukung
   const supportingInfos = useMemo(
     () => characters.supporting.map(char => getCharacterInfo(char.character)),
     [characters.supporting]
   )
 
-  // Data untuk bar chart - semua karakter
+  // Data untuk bar chart - pakai nama emosi (Bahagia, Sedih, dll)
   const chartData = characters.all.map(char => {
     const info = getCharacterInfo(char.character)
     return {
-      name: info.name,
+      name: EMOTION_LABELS[char.character] || char.character,
       frequency: char.frequency,
       color: info.color.replace('bg-', ''),
     }
   })
+
+  // Data tabel: jawaban benar (positif) vs salah (negatif) per emosi
+  const tableData = useMemo(() => {
+    const emotionOrder = ['joy', 'sadness', 'anger', 'fear', 'disgust', 'surprise']
+    return emotionOrder.map(character => ({
+      emosi: EMOTION_LABELS[character],
+      benar: frequencies[character] ?? 0,
+      salah: negativeFrequencies[character] ?? 0,
+    }))
+  }, [frequencies, negativeFrequencies])
 
   // Hitung persentase untuk karakter dominan
   const totalAnswers = Object.values(frequencies).reduce((a, b) => a + b, 0)
@@ -52,7 +73,7 @@ const Results = ({ answers, onReset }) => {
             Hasil Self-Awareness Quiz
           </h1>
           <p className="text-gray-600">
-            Kenali dirimu lebih dalam melalui 9 karakter emosi
+            Kenali dirimu lebih dalam melalui 6 karakter emosi
           </p>
         </div>
 
@@ -168,13 +189,41 @@ const Results = ({ answers, onReset }) => {
           </div>
         </div>
 
-        {/* Bar Chart - Visualisasi Frekuensi */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+        {/* Tabel Jawaban Benar/Salah per Emosi */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 overflow-x-auto">
           <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
-            Visualisasi Karakter Kamu
+            Tabel Jawaban per Emosi
           </h3>
           <p className="text-sm text-gray-600 text-center mb-4">
-            Grafik ini menunjukkan frekuensi jawaban positif (Setuju/Sangat Setuju) untuk setiap karakter
+            Jawaban benar (Setuju/Sangat Setuju) dan salah (Tidak Setuju/Sangat Tidak Setuju) tetap terdeteksi per emosi
+          </p>
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b-2 border-gray-200">
+                <th className="text-left py-3 px-4 font-semibold text-gray-800">Emosi</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-800">Benar</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-800">Salah</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableData.map((row, idx) => (
+                <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="py-3 px-4 font-medium text-gray-700">{row.emosi}</td>
+                  <td className="py-3 px-4 text-center text-green-600">{row.benar}</td>
+                  <td className="py-3 px-4 text-center text-red-600">{row.salah}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Bar Chart - Dominasi Emosi */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+            Visualisasi Dominasi Emosi
+          </h3>
+          <p className="text-sm text-gray-600 text-center mb-4">
+            Grafik ini menunjukkan dominasi emosi yang ada pada dirimu
           </p>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -197,7 +246,7 @@ const Results = ({ answers, onReset }) => {
                         <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
                           <p className="font-semibold">{payload[0].payload.name}</p>
                           <p className="text-sm text-gray-600">
-                            Frekuensi: {payload[0].value} jawaban positif
+                            Dominasi: {payload[0].value} jawaban positif
                           </p>
                         </div>
                       )
@@ -207,7 +256,6 @@ const Results = ({ answers, onReset }) => {
                 />
                 <Bar dataKey="frequency" radius={[8, 8, 0, 0]}>
                   {chartData.map((entry, index) => {
-                    // Mapping warna
                     const colorMap = {
                       'yellow-400': '#fbbf24',
                       'blue-400': '#60a5fa',

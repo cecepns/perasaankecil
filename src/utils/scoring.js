@@ -28,6 +28,27 @@ export const calculateCharacterFrequencies = (answers) => {
 }
 
 /**
+ * Menghitung frekuensi jawaban negatif (Tidak Setuju/Sangat Tidak Setuju) per karakter
+ */
+export const calculateCharacterNegativeFrequencies = (answers) => {
+  const frequencies = {
+    sadness: 0,
+    anger: 0,
+    fear: 0,
+    disgust: 0,
+    joy: 0,
+    surprise: 0,
+  }
+  questions.forEach((question) => {
+    const answer = answers[question.id]
+    if (answer === 1 || answer === 2) {
+      frequencies[question.character]++
+    }
+  })
+  return frequencies
+}
+
+/**
  * Menentukan karakter dominan (frekuensi tertinggi) dan 3 karakter pendukung
  */
 export const determineCharacters = (frequencies) => {
